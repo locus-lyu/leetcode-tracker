@@ -45,6 +45,24 @@
       font-weight: 650;
     }
 
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .header-link {
+      flex: none;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--soft);
+      color: var(--text);
+      font-size: 13px;
+      text-decoration: none;
+    }
+
     h2 {
       margin: 0 0 10px;
       font-size: 16px;
@@ -197,7 +215,10 @@
 </head>
 <body>
   <header>
-    <h1>学习进展看板</h1>
+    <div class="header-row">
+      <h1>学习进展看板</h1>
+      <a class="header-link" id="learningLink" href="learning.html?mode=view">其他学习进展</a>
+    </div>
     <div class="muted" id="syncLine">等待读取云端数据</div>
   </header>
 
@@ -461,6 +482,9 @@
     }
 
     const config = loadConfig();
+    const learningParams = new URLSearchParams({mode: "view"});
+    if (config.gistId) learningParams.set("gist", config.gistId);
+    $("learningLink").href = `learning.html?${learningParams.toString()}`;
     $("gistId").value = config.gistId;
     $("fileName").value = config.fileName;
     $("token").value = config.token;
