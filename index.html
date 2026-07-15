@@ -52,9 +52,24 @@
     }
 
     .toolbar {
-      grid-template-columns: repeat(6, minmax(0, auto));
+      grid-template-columns: repeat(7, minmax(0, auto));
       justify-content: start;
       align-items: center;
+    }
+
+    .toolbar-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--soft);
+      color: var(--text);
+      font-size: 14px;
+      text-decoration: none;
+      white-space: nowrap;
     }
 
     .filters {
@@ -450,6 +465,7 @@
       <button id="importBtn">导入</button>
       <button id="printBtn">打印</button>
       <button class="danger" id="clearBtn">清空</button>
+      <a class="toolbar-link" href="learning.html">其他学习进展</a>
       <input class="hidden" id="importFile" type="file" accept=".json,.csv,text/csv,application/json">
     </div>
     <div class="filters">
