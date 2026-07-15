@@ -154,8 +154,36 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .form-grid label:nth-child(2) { grid-column: span 2; }
-    .form-grid label:last-child { grid-column: 1 / -1; }
+    .form-grid .title-field { grid-column: span 2; }
+    .form-grid .notes-field { grid-column: 1 / -1; }
+
+    .quick-add {
+      display: grid;
+      grid-template-columns: minmax(180px, 260px) auto minmax(220px, 1fr);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .quick-add-status {
+      align-self: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .advanced-add {
+      margin-top: 10px;
+    }
+
+    .advanced-add summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      list-style-position: inside;
+    }
+
+    .advanced-add .form-grid {
+      margin-top: 10px;
+    }
 
     .table-wrap { overflow-x: auto; }
 
@@ -394,7 +422,9 @@
       header { position: static; }
       main { padding: 12px; }
       .toolbar, .filters, .form-grid, .stats, .bulk-grid { grid-template-columns: 1fr; }
-      .form-grid label:nth-child(2) { grid-column: auto; }
+      .quick-add { grid-template-columns: 1fr auto; }
+      .quick-add-status { grid-column: 1 / -1; }
+      .form-grid .title-field, .form-grid .notes-field { grid-column: auto; }
       .bulk-grid label:last-of-type { grid-column: auto; }
       th { position: static; }
     }
@@ -449,43 +479,47 @@
   <main>
     <section class="panel">
       <div class="panel-body edit-panel">
-        <div class="form-grid">
-          <label>题号
-            <input id="newId" placeholder="146">
+        <div class="quick-add">
+          <label>LeetCode 题号
+            <input id="newId" inputmode="numeric" placeholder="例如 146" autocomplete="off">
           </label>
-          <label>标题
-            <input id="newTitle" placeholder="留空自动补全">
-          </label>
-          <label>周
-            <input id="newWeek" type="number" min="1" max="52" value="1">
-          </label>
-          <label>难度
-            <select id="newDifficulty">
-              <option>Easy</option>
-              <option selected>Medium</option>
-              <option>Hard</option>
-            </select>
-          </label>
-          <label>专题
-            <input id="newTopic" placeholder="设计 / 链表">
-          </label>
-          <label>状态
-            <select id="newStatus"></select>
-          </label>
-          <label>用时分钟
-            <input id="newMinutes" type="number" min="0" placeholder="35">
-          </label>
-          <label>下次复习
-            <input id="newReview" type="date">
-          </label>
-          <label>笔记
-            <textarea id="newNotes" placeholder="核心模型 / 易错点 / 需要重做的原因"></textarea>
-          </label>
+          <button class="primary" id="addBtn">添加</button>
+          <span class="quick-add-status" id="addStatus" role="status" aria-live="polite">只填题号即可，默认加入当前学习周。</span>
         </div>
-        <div style="margin-top:10px">
-          <button class="primary" id="addBtn">添加题目</button>
-          <span class="help">提示：状态改为 A/B/C 会自动写入今天日期；复习日期仍可手动改。</span>
-        </div>
+        <details class="advanced-add">
+          <summary>更多设置</summary>
+          <div class="form-grid">
+            <label class="title-field">标题
+              <input id="newTitle" placeholder="自动补全">
+            </label>
+            <label>周
+              <input id="newWeek" type="number" min="1" max="200" placeholder="自动：当前周">
+            </label>
+            <label>难度
+              <select id="newDifficulty">
+                <option value="auto" selected>自动</option>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard</option>
+              </select>
+            </label>
+            <label>专题
+              <input id="newTopic" placeholder="自动：临时添加">
+            </label>
+            <label>状态
+              <select id="newStatus"></select>
+            </label>
+            <label>用时分钟
+              <input id="newMinutes" type="number" min="0" placeholder="完成后再填">
+            </label>
+            <label>下次复习
+              <input id="newReview" type="date">
+            </label>
+            <label class="notes-field">笔记
+              <textarea id="newNotes" placeholder="核心模型 / 易错点"></textarea>
+            </label>
+          </div>
+        </details>
         <details class="bulk-panel">
           <summary>批量追加题号</summary>
           <div class="bulk-grid">
@@ -902,6 +936,7 @@
       el("statDone").textContent = done;
       el("statThisWeek").textContent = thisWeekDone;
       el("statDue").textContent = due;
+      if (!el("newWeek").value) el("newWeek").placeholder = `自动：第 ${currentWeek} 周`;
     }
 
     function renderWeeks() {
@@ -1042,28 +1077,45 @@
 
     function currentPlanWeek() {
       const selected = el("weekFilter").value;
-      if (selected !== "all") return Number(selected);
+      if (selected && selected !== "all") return Number(selected);
       const due = tasks.find(t => !isDone(t));
-      return due ? Number(due.week) : 1;
+      if (due) return Number(due.week);
+      return Math.max(1, ...tasks.map(t => Number(t.week || 1)));
     }
 
     function upsertTaskFromForm() {
       const id = el("newId").value.trim();
-      if (!id) return alert("题号不能为空");
+      if (!/^\d+$/.test(id) || Number(id) < 1) {
+        el("addStatus").textContent = "请输入有效的 LeetCode 题号。";
+        return;
+      }
+      const existing = tasks.find(t => String(t.id) === String(Number(id)));
+      if (existing) {
+        el("addStatus").textContent = `#${Number(id)} 已在第 ${existing.week} 周，不会重复添加。`;
+        return;
+      }
       const status = el("newStatus").value;
-      tasks.push(createTask(id, {
+      const group = PLAN.find(item => item.ids.includes(Number(id)));
+      const week = Number(el("newWeek").value) || currentPlanWeek();
+      const task = createTask(Number(id), {
         title: el("newTitle").value.trim() || undefined,
-        week: Number(el("newWeek").value || 1),
+        week,
         difficulty: el("newDifficulty").value,
-        topic: el("newTopic").value.trim() || "未分类",
+        topic: el("newTopic").value.trim() || group?.topic || "临时添加",
         status,
         minutes: el("newMinutes").value,
         lastDate: ["a","b","c","mastered"].includes(status) ? today() : "",
         reviewDate: el("newReview").value || reviewForStatus(status),
         notes: el("newNotes").value.trim()
-      }));
+      });
+      tasks.push(task);
       save();
-      ["newId","newTitle","newMinutes","newReview","newNotes"].forEach(id => el(id).value = "");
+      ["newId","newTitle","newWeek","newTopic","newMinutes","newReview","newNotes"].forEach(field => el(field).value = "");
+      el("newDifficulty").value = "auto";
+      el("newStatus").value = "todo";
+      el("addStatus").textContent = PROBLEMS[Number(id)]
+        ? `已添加 #${Number(id)} ${task.title} · 第 ${week} 周。`
+        : `已添加 #${Number(id)} · 第 ${week} 周；标题可在下方表格补充。`;
       render();
     }
 
@@ -1332,6 +1384,9 @@
     });
 
     el("addBtn").addEventListener("click", upsertTaskFromForm);
+    el("newId").addEventListener("keydown", event => {
+      if (event.key === "Enter") upsertTaskFromForm();
+    });
     el("bulkAddBtn").addEventListener("click", addBulkProblems);
     el("replacePlanBtn").addEventListener("click", replacePlanWithIds);
     el("exportJsonBtn").addEventListener("click", () => download("leetcode-tracker.json", JSON.stringify(tasks, null, 2), "application/json"));
