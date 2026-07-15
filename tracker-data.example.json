@@ -1,0 +1,21 @@
+{
+  "app": "minimal-leetcode-tracker",
+  "version": 1,
+  "updatedAt": "2026-07-15T00:00:00.000Z",
+  "tasks": [
+    {
+      "uid": "example-1",
+      "id": "1",
+      "title": "Two Sum",
+      "slug": "two-sum",
+      "week": 1,
+      "difficulty": "Easy",
+      "topic": "数组与哈希",
+      "status": "a",
+      "minutes": "18",
+      "lastDate": "2026-07-15",
+      "reviewDate": "2026-07-22",
+      "notes": "need = target - nums[i]"
+    }
+  ]
+}
