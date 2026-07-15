@@ -1,6 +1,6 @@
-# LeetCode Tracker
+# 学习追踪
 
-一个静态刷题追踪器。
+一个静态学习追踪器。
 
 - `index.html`: PC 记录页，负责录入、编辑、同步。
 - `mobile.html`: 手机只读看板，负责查看进度和复习重点。
@@ -16,7 +16,7 @@
 6. 手机访问：
 
 ```text
-https://你的用户名.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
+https://locus-lyu.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
 ```
 
 ## GitHub Pages 部署
@@ -33,10 +33,10 @@ leetcode-tracker
 
 ```text
 PC 页面：
-https://你的用户名.github.io/leetcode-tracker/
+https://locus-lyu.github.io/leetcode-tracker/
 
 手机看板：
-https://你的用户名.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
+https://locus-lyu.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
 ```
 
 ## Token 注意
