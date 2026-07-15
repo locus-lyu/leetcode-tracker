@@ -4,7 +4,9 @@
 
 - `index.html`: PC 记录页，负责录入、编辑、同步。
 - `mobile.html`: 手机只读看板，负责查看进度和复习重点。
-- 数据保存在 GitHub Gist 的 `leetcode-tracker.json`。
+- `learning.html`: 其他学习记录页，包含面试、C/C++、操作系统和内核四个模块。
+- 算法数据保存在 GitHub Gist 的 `leetcode-tracker.json`。
+- 其他学习记录保存在同一 Gist 的 `learning-notes.json`，两类数据互不覆盖。
 
 ## 使用顺序
 
@@ -13,7 +15,8 @@
 3. 在 `云同步` 区域填写 GitHub Token。
 4. 点击 `创建云端`，页面会生成 Gist ID。
 5. 以后在 PC 上记录后点 `同步`。
-6. 手机访问：
+6. 点击顶部的 `其他学习进展`，可记录面试笔记、C/C++、操作系统和内核学习内容。
+7. 手机访问：
 
 ```text
 https://locus-lyu.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
@@ -37,6 +40,9 @@ https://locus-lyu.github.io/leetcode-tracker/
 
 手机看板：
 https://locus-lyu.github.io/leetcode-tracker/mobile.html?gist=你的GistID&file=leetcode-tracker.json
+
+手机学习记录：
+https://locus-lyu.github.io/leetcode-tracker/learning.html?mode=view&gist=你的GistID
 ```
 
 ## Token 注意
